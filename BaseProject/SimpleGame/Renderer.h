@@ -34,5 +34,6 @@ private:
 	GLuint m_SolidRectShader = 0;
 
 	GLuint m_VBOTriangle = 0;
+	GLuint m_SolidTriangleShader = 0;
 };
 
