@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include <string>
 #include <cstdlib>
@@ -34,6 +34,6 @@ private:
 	GLuint m_SolidRectShader = 0;
 
 	GLuint m_VBOTriangle = 0;
-	GLuint m_SolidTriangleShader = 0;
+	GLuint m_TriangleShader = 0;
 };
 
