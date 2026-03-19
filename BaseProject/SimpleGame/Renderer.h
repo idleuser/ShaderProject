@@ -1,11 +1,21 @@
-﻿#pragma once
+#pragma once
 
+#include <iostream>
+#include <fstream>
 #include <string>
 #include <cstdlib>
-#include <fstream>
-#include <iostream>
+#include <vector>
+#include <random>
 
 #include "Dependencies\glew.h"
+
+struct Particle
+{
+	float pos[3];
+	float size;
+	float mass;
+	float vel[2];
+};
 
 class Renderer
 {
@@ -16,7 +26,8 @@ public:
 	bool IsInitialized();
 	void DrawSolidRect(float x, float y, float z, float size, float r, float g, float b, float a);
 	void DrawSolidTriangle(float x, float y, float z, float size, float r, float g, float b, float a);
-
+	void GenParticles(int particleNum);
+	void DrawParticles();
 private:
 	void Initialize(int windowSizeX, int windowSizeY);
 	bool ReadFile(char* filename, std::string *target);
@@ -35,5 +46,9 @@ private:
 
 	GLuint m_VBOTriangle = 0;
 	GLuint m_TriangleShader = 0;
+
+	GLuint m_ParticleNum = 1;
+	GLuint m_VBOParticle = 0;
+	GLuint m_VAOParticles = 0;
 };
 
