@@ -109,8 +109,12 @@ void Renderer::CreateVertexBufferObjects()
 	glEnableVertexAttribArray(attribMass);
 	int attribVel = glGetAttribLocation(m_TriangleShader, "a_Vel");
 	glEnableVertexAttribArray(attribVel);
+	int attribRV = glGetAttribLocation(m_TriangleShader, "a_RV");
+	glEnableVertexAttribArray(attribRV);
+	int attribRV2 = glGetAttribLocation(m_TriangleShader, "a_RV2");
+	glEnableVertexAttribArray(attribRV2);
 
-	int stride = sizeof(float) * 7;
+	int stride = sizeof(float) * 9;
 
 	glVertexAttribPointer(attribPosition, 3, GL_FLOAT, GL_FALSE, stride, 0);
 	glVertexAttribDivisor(attribPosition, 1);
@@ -120,6 +124,10 @@ void Renderer::CreateVertexBufferObjects()
 	glVertexAttribDivisor(attribMass, 1);
 	glVertexAttribPointer(attribVel, 2, GL_FLOAT, GL_FALSE, stride, (GLvoid*)(sizeof(float) * 5));
 	glVertexAttribDivisor(attribVel, 1);
+	glVertexAttribPointer(attribRV, 1, GL_FLOAT, GL_FALSE, stride, (GLvoid*)(sizeof(float) * 7));
+	glVertexAttribDivisor(attribRV, 1);
+	glVertexAttribPointer(attribRV2, 1, GL_FLOAT, GL_FALSE, stride, (GLvoid*)(sizeof(float) * 8));
+	glVertexAttribDivisor(attribRV2, 1);
 
 	glBindVertexArray(0);				// VAO 해제
 	glBindBuffer(GL_ARRAY_BUFFER, 0);	// VBO 해제
@@ -129,16 +137,20 @@ void Renderer::GenParticles(int num)
 {
 	std::default_random_engine dre;
 	std::uniform_real_distribution<float> urdPos(-0.3f, 0.3f);
-	std::uniform_real_distribution<float> urdSize{ 0.1 , 0.3 };
+	std::uniform_real_distribution<float> urdSize{ 0.01 , 0.1 };
 	std::uniform_real_distribution<float> urdVx{ -3.0 , 3.0 };
 	std::uniform_real_distribution<float> urdVy{ -2.0 , 6.0 };
+	std::uniform_real_distribution<float> urdRV{ 0.0 , 1.0 };
+	std::uniform_real_distribution<float> urdRV2{ 0.0 , 1.0 };
 
 	m_ParticleNum = num;
 	std::vector<Particle> particles(m_ParticleNum);
 
 	for (int i = 0; i < m_ParticleNum; ++i) {
-		particles[i].pos[0] = urdPos(dre);
-		particles[i].pos[1] = urdPos(dre);
+		/*particles[i].pos[0] = urdPos(dre);
+		particles[i].pos[1] = urdPos(dre);*/
+		particles[i].pos[0] = 0.0f;
+		particles[i].pos[1] = 0.0f;
 		particles[i].pos[2] = 0.0f;
 
 		particles[i].size = urdSize(dre);
@@ -146,6 +158,9 @@ void Renderer::GenParticles(int num)
 
 		particles[i].vel[0] = urdVx(dre);
 		particles[i].vel[1] = urdVy(dre);
+
+		particles[i].rv = urdRV(dre);
+		particles[i].rv2 = urdRV2(dre);
 	}
 
 	// 버퍼에 데이터 업로드

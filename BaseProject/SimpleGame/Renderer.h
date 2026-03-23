@@ -15,6 +15,7 @@ struct Particle
 	float size;
 	float mass;
 	float vel[2];
+	float rv, rv2;
 };
 
 class Renderer
