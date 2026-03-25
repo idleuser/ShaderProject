@@ -49,7 +49,6 @@ void Renderer::CreateVertexBufferObjects()
 	//float size = 0.1;
 	//float mass = 1;
 	//float vx = 1, vy = 3;
-
 	//float triangle[]
 	//	=
 	//{	// triangle1
@@ -59,7 +58,6 @@ void Renderer::CreateVertexBufferObjects()
 	//	mass, vx, vy,
 	//	centerX + size / 2, centerY + size / 2, 0, 
 	//	mass, vx, vy,
-
 	//	// triangle2
 	//	centerX - size / 2, centerY - size / 2, 0, 
 	//	mass, vx, vy,
@@ -92,6 +90,7 @@ void Renderer::CreateVertexBufferObjects()
 	glBindVertexArray(m_VAOParticles);		// 배열에 바인딩
 
 	// 1. 파티클 틀 설정 - m_VBOTriangle 연결
+	// 파티클 1개 = 정점 6개
 	glBindBuffer(GL_ARRAY_BUFFER, m_VBOTriangle);
 	int attribLocal = glGetAttribLocation(m_TriangleShader, "a_Local");
 	glEnableVertexAttribArray(attribLocal);
@@ -99,6 +98,7 @@ void Renderer::CreateVertexBufferObjects()
 	glVertexAttribDivisor(attribLocal, 0);
 
 	// 2. 인스턴스 데이터 설정 - m_VBOParticle 연결
+	// 데이터 - 위치, 크기, 질량, 속도, RV, RV2, RV3
 	glGenBuffers(1, &m_VBOParticle);
 	glBindBuffer(GL_ARRAY_BUFFER, m_VBOParticle);
 	int attribPosition = glGetAttribLocation(m_TriangleShader, "a_Position");
@@ -113,8 +113,10 @@ void Renderer::CreateVertexBufferObjects()
 	glEnableVertexAttribArray(attribRV);
 	int attribRV2 = glGetAttribLocation(m_TriangleShader, "a_RV2");
 	glEnableVertexAttribArray(attribRV2);
+	int attribRV3 = glGetAttribLocation(m_TriangleShader, "a_RV3");
+	glEnableVertexAttribArray(attribRV3);
 
-	int stride = sizeof(float) * 9;
+	int stride = sizeof(float) * 10;
 
 	glVertexAttribPointer(attribPosition, 3, GL_FLOAT, GL_FALSE, stride, 0);
 	glVertexAttribDivisor(attribPosition, 1);
@@ -128,6 +130,8 @@ void Renderer::CreateVertexBufferObjects()
 	glVertexAttribDivisor(attribRV, 1);
 	glVertexAttribPointer(attribRV2, 1, GL_FLOAT, GL_FALSE, stride, (GLvoid*)(sizeof(float) * 8));
 	glVertexAttribDivisor(attribRV2, 1);
+	glVertexAttribPointer(attribRV3, 1, GL_FLOAT, GL_FALSE, stride, (GLvoid*)(sizeof(float) * 9));
+	glVertexAttribDivisor(attribRV3, 1);
 
 	glBindVertexArray(0);				// VAO 해제
 	glBindBuffer(GL_ARRAY_BUFFER, 0);	// VBO 해제
@@ -141,7 +145,6 @@ void Renderer::GenParticles(int num)
 	std::uniform_real_distribution<float> urdVx{ -3.0 , 3.0 };
 	std::uniform_real_distribution<float> urdVy{ -2.0 , 6.0 };
 	std::uniform_real_distribution<float> urdRV{ 0.0 , 1.0 };
-	std::uniform_real_distribution<float> urdRV2{ 0.0 , 1.0 };
 
 	m_ParticleNum = num;
 	std::vector<Particle> particles(m_ParticleNum);
@@ -160,7 +163,8 @@ void Renderer::GenParticles(int num)
 		particles[i].vel[1] = urdVy(dre);
 
 		particles[i].rv = urdRV(dre);
-		particles[i].rv2 = urdRV2(dre);
+		particles[i].rv2 = urdRV(dre);
+		particles[i].rv3 = urdRV(dre);
 	}
 
 	// 버퍼에 데이터 업로드
