@@ -55,5 +55,11 @@
     <None Include="Shaders\SolidTriangle.vs">
       <Filter>소스 파일\Shaders</Filter>
     </None>
+    <None Include="Shaders\RectFS.fs">
+      <Filter>소스 파일\Shaders</Filter>
+    </None>
+    <None Include="Shaders\RectFS.vs">
+      <Filter>소스 파일\Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

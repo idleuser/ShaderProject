@@ -26,9 +26,10 @@ public:
 
 	bool IsInitialized();
 	void DrawSolidRect(float x, float y, float z, float size, float r, float g, float b, float a);
-	void DrawSolidTriangle(float x, float y, float z, float size, float r, float g, float b, float a);
+	void DrawSolidTriangle();
 	void GenParticles(int particleNum);
 	void DrawParticles();
+	void DrawFS();
 private:
 	void Initialize(int windowSizeX, int windowSizeY);
 	bool ReadFile(char* filename, std::string *target);
@@ -51,5 +52,9 @@ private:
 	GLuint m_ParticleNum = 1;
 	GLuint m_VBOParticle = 0;
 	GLuint m_VAOParticles = 0;
+
+	// fragment shader
+	GLuint m_VBOFS = 0;
+	GLuint m_FSShader = 0;
 };
 
