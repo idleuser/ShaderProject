@@ -56,5 +56,7 @@ private:
 	// fragment shader
 	GLuint m_VBOFS = 0;
 	GLuint m_FSShader = 0;
+
+	float m_DropPoints[1000 * 4];
 };
 

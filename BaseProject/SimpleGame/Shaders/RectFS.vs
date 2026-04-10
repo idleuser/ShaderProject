@@ -1,16 +1,16 @@
 #version 330
 
 in vec3 a_Pos;
-in vec2 a_TPos;
+in vec2 a_Tex;
 uniform float u_Time;
 
-out vec2 v_TPos;
+out vec2 v_Tex;
 
 void main()
 {
 	vec4 newPos = vec4(a_Pos, 1.0);
 
-	v_TPos = a_TPos;
+	v_Tex = a_Tex;
 
 	gl_Position = newPos;
 }

@@ -26,6 +26,20 @@ void Renderer::Initialize(int windowSizeX, int windowSizeY)
 	//Create VBOs
 	CreateVertexBufferObjects();
 
+	// Drop Info
+	int index = 0;
+	for (int i = 0; i < 1000; i++) {
+		float x = (float)rand() / (float)RAND_MAX;
+		float y = (float)rand() / (float)RAND_MAX;
+		float startTime = 3 * (float)rand() / (float)RAND_MAX;
+		float lifeTime = (float)rand() / (float)RAND_MAX;
+
+		m_DropPoints[index] = x;	index++;
+		m_DropPoints[index] = y;	index++;
+		m_DropPoints[index] = startTime;	index++;
+		m_DropPoints[index] = lifeTime;		index++;
+	}
+
 	m_Initialized = true;
 }
 
@@ -364,10 +378,12 @@ void Renderer::DrawFS()
 
 	int uTime = glGetUniformLocation(m_FSShader, "u_Time");
 	glUniform1f(uTime, g_time);
+	int uPoints = glGetUniformLocation(m_FSShader, "u_DropInfo");
+	glUniform4fv(uPoints, 1000, m_DropPoints);
 
 	int attribPos = glGetAttribLocation(m_FSShader, "a_Pos");
 	glEnableVertexAttribArray(attribPos);
-	int attribTPos = glGetAttribLocation(m_FSShader, "a_TPos");
+	int attribTPos = glGetAttribLocation(m_FSShader, "a_Tex");
 	glEnableVertexAttribArray(attribTPos);
 
 	glBindBuffer(GL_ARRAY_BUFFER, m_VBOFS);
