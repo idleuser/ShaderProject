@@ -8,9 +8,8 @@ out vec2 v_Tex;
 
 void main()
 {
-	vec4 newPos = vec4(a_Pos, 1.0);
-
 	v_Tex = a_Tex;
 
+	vec4 newPos = vec4(a_Pos, 1.0);
 	gl_Position = newPos;
 }

@@ -1,5 +1,8 @@
 #include "stdafx.h"
 #include "Renderer.h"
+#include "LoadPng.h"
+#include <assert.h>
+#include "Windows.h"
 
 Renderer::Renderer(int windowSizeX, int windowSizeY)
 {
@@ -22,6 +25,13 @@ void Renderer::Initialize(int windowSizeX, int windowSizeY)
 	//m_SolidRectShader = CompileShaders("./Shaders/SolidRect.vs", "./Shaders/SolidRect.fs");
 	//m_TriangleShader = CompileShaders("./Shaders/SolidTriangle.vs", "./Shaders/SolidTriangle.fs");
 	m_FSShader = CompileShaders("./Shaders/RectFS.vs", "./Shaders/RectFS.fs");
+
+	// Load Textures
+	m_RGBTexture = CreatePngTexture("./Textures/RGB.png", GL_NEAREST);
+	m_NumsTexture = CreatePngTexture("./Textures/Numbers.png", GL_NEAREST);
+	for (int i = 0; i < 10; i++) {
+		m_NumTexture[i] = CreatePngTexture((char*)("./Textures/" + std::to_string(i) + ".png").c_str(), GL_NEAREST);
+	}
 
 	//Create VBOs
 	CreateVertexBufferObjects();
@@ -46,6 +56,28 @@ void Renderer::Initialize(int windowSizeX, int windowSizeY)
 bool Renderer::IsInitialized()
 {
 	return m_Initialized;
+}
+
+GLuint Renderer::CreatePngTexture(char* filePath, GLuint samplingMethod)
+{
+	//Load Png
+	std::vector<unsigned char> image;
+	unsigned width, height;
+	unsigned error = lodepng::decode(image, width, height, filePath);
+
+	if (error != 0)
+	{
+		std::cout << "PNG image loading failed:" << filePath << std::endl;
+		assert(0);
+	}
+
+	GLuint temp;
+	glGenTextures(1, &temp);
+	glBindTexture(GL_TEXTURE_2D, temp);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA,GL_UNSIGNED_BYTE, &image[0]);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, samplingMethod);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, samplingMethod);
+	return temp;
 }
 
 void Renderer::CreateVertexBufferObjects()
@@ -368,6 +400,7 @@ void Renderer::DrawParticles()
 	glBindVertexArray(0);
 }
 
+int g_CurrNum = 0;
 void Renderer::DrawFS()
 {
 	static float g_time = 0;
@@ -380,6 +413,43 @@ void Renderer::DrawFS()
 	glUniform1f(uTime, g_time);
 	int uPoints = glGetUniformLocation(m_FSShader, "u_DropInfo");
 	glUniform4fv(uPoints, 1000, m_DropPoints);
+	int uInputNum = glGetUniformLocation(m_FSShader, "u_InputNum");
+	glUniform1i(uInputNum, g_CurrNum);
+
+	int uRGBTexture = glGetUniformLocation(m_FSShader, "u_RGBTex");
+	glUniform1i(uRGBTexture, 0);
+	int uNumsTexture = glGetUniformLocation(m_FSShader, "u_NumsTex");
+	glUniform1i(uNumsTexture, 1);
+	int uCurrNumTexture = glGetUniformLocation(m_FSShader, "u_CurrNumTex");
+	glUniform1i(uCurrNumTexture, g_CurrNum + 2);
+	g_CurrNum = (g_CurrNum + 1) % 10;
+	Sleep(1000);
+
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, m_RGBTexture);
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, m_NumsTexture);
+
+	glActiveTexture(GL_TEXTURE2);
+	glBindTexture(GL_TEXTURE_2D, m_NumTexture[0]);
+	glActiveTexture(GL_TEXTURE3);
+	glBindTexture(GL_TEXTURE_2D, m_NumTexture[1]);
+	glActiveTexture(GL_TEXTURE4);
+	glBindTexture(GL_TEXTURE_2D, m_NumTexture[2]);
+	glActiveTexture(GL_TEXTURE5);
+	glBindTexture(GL_TEXTURE_2D, m_NumTexture[3]);
+	glActiveTexture(GL_TEXTURE6);
+	glBindTexture(GL_TEXTURE_2D, m_NumTexture[4]);
+	glActiveTexture(GL_TEXTURE7);
+	glBindTexture(GL_TEXTURE_2D, m_NumTexture[5]);
+	glActiveTexture(GL_TEXTURE8);
+	glBindTexture(GL_TEXTURE_2D, m_NumTexture[6]);
+	glActiveTexture(GL_TEXTURE9);
+	glBindTexture(GL_TEXTURE_2D, m_NumTexture[7]);
+	glActiveTexture(GL_TEXTURE10);
+	glBindTexture(GL_TEXTURE_2D, m_NumTexture[8]);
+	glActiveTexture(GL_TEXTURE11);
+	glBindTexture(GL_TEXTURE_2D, m_NumTexture[9]);
 
 	int attribPos = glGetAttribLocation(m_FSShader, "a_Pos");
 	glEnableVertexAttribArray(attribPos);

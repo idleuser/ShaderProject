@@ -6,6 +6,10 @@ in vec2 v_Tex;
 
 uniform float u_Time;
 uniform vec4 u_DropInfo[1000]; // vec4(x, y, startTime, lifeTime)
+uniform sampler2D u_RGBTex; // 0
+uniform sampler2D u_CurrNumTex;
+uniform sampler2D u_NumsTex;
+uniform int u_InputNum;
 
 const float C_PI = 3.141592;
 
@@ -229,7 +233,106 @@ void Smoke()
     FragColor = vec4(color);
 }
 
+void TextureSampling()
+{
+    vec4 c0;
+    vec4 c1;
+    vec4 c2;
+    vec4 c3;
+    vec4 c4;
+    float offset = 0.01;
+    c0 = texture(u_RGBTex, vec2(v_Tex.x - offset * 2, v_Tex.y));
+    c1 = texture(u_RGBTex, vec2(v_Tex.x - offset * 1, v_Tex.y));
+    c2 = texture(u_RGBTex, vec2(v_Tex.x - offset * 0, v_Tex.y));
+    c3 = texture(u_RGBTex, vec2(v_Tex.x - offset * 1, v_Tex.y));
+    c4 = texture(u_RGBTex, vec2(v_Tex.x - offset * 2, v_Tex.y));
+
+    vec4 sum = c0 + c1 + c2 + c3 + c4;
+    vec4 average = sum / 5.0;
+
+    FragColor = average;
+}
+
+void TextureQ1()
+{
+    float tx = v_Tex.x;
+    float ty = 1 - 2 * abs(v_Tex.y - 0.5);
+
+    FragColor = texture(u_RGBTex, vec2(tx, ty));
+}
+
+void TextureQ2()
+{
+    float tx = fract(v_Tex.x * 3);          // 0~1 사이의 값이 3번 반복됨. (3으로 곱해서 0~3 사이로 만들고, fract로 0~1 사이로 다시 만듦.)
+    float ty = v_Tex.y/3;
+
+    float offsetx = 0;
+    float offsety = floor(v_Tex.x * 3)/3;   // floor(v_Tex.x * 3)로 0, 1, 2가 반복됨. 3으로 나눠서 0~1 사이로 만듦.
+    //float offsety = 2 - floor(v_Tex.x * 3)/3;
+
+   vec2 newTex = vec2(tx + offsetx, ty + offsety);
+    FragColor = texture(u_RGBTex, newTex);
+}
+
+void TextureQ3()
+{
+    float resolx = 3;
+    float resoly = 3;
+    float shear = 0.5 * u_Time;
+
+    float offsetx = fract(ceil(v_Tex.y * resoly) * shear);
+    float offsety = 0;
+
+    //float tx = 0.5 + floor(v_Tex.y * 2)/2 + fract(v_Tex.x * 2);   
+    float tx = fract(v_Tex.x * resolx + offsetx);
+    float ty = fract(v_Tex.y * resoly + offsety);
+    
+    vec2 newTex = vec2(tx, ty);
+    FragColor = texture(u_RGBTex, newTex);
+}
+
+void TextureQ4()
+{
+    float resolx = 2;
+    float resoly = 2;
+    float shear = 0.5 * u_Time;
+
+    float offsetx = 0;
+    float offsety = fract(ceil(v_Tex.x * resolx) * shear) + shear;
+   
+    float tx = fract(v_Tex.x * resolx + offsetx);
+    float ty = fract(v_Tex.y * resoly + offsety);
+    
+    vec2 newTex = vec2(tx, ty);
+    FragColor = texture(u_RGBTex, newTex);
+}
+
+void Num()
+{
+    float tx = v_Tex.x;  
+    float ty = v_Tex.y;
+
+    float offsetx = 0;
+    float offsety = 0;
+
+   vec2 newTex = vec2(tx + offsetx, ty + offsety);
+    FragColor = texture(u_CurrNumTex, newTex);
+}
+
+void Nums()
+{
+    float index = float(u_InputNum);
+    float tx = v_Tex.x/5;  
+    float ty = v_Tex.y/2;
+
+    float offsetx = fract(index/5.0);
+    float offsety = floor(index/5.0)/2.0;
+
+   vec2 newTex = vec2(tx + offsetx, ty + offsety);
+    FragColor = texture(u_NumsTex, newTex);
+}
+
 void main()
 {
-    Smoke();
+    Nums();
 }
